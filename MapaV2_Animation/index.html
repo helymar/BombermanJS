@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="phaser.js"></script>
+</head>
+<body>
+
+    <script>
+    var config = {
+        type: Phaser.AUTO,
+        width: 900,
+        height: 600,
+        physics: {
+            default: 'arcade',
+            arcade: {
+              debug: true,
+            }
+        },
+        scene: {
+          preload: preload,
+          create: create,
+          update: update
+        }
+    };
+    var p1;
+    var cursors;
+    var walls;
+    var pressed = false;
+    var Bomba;
+    var explosion;
+    var timedEvent;
+    var open=false;
+    var bomba;
+
+    var game = new Phaser.Game(config);
+    function preload()
+    {
+      this.load.spritesheet('p1Arriba', 'assets/Personajes/P1/ArribaReal.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p1Abajo', 'assets/Personajes/P1/AbajoReal.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p1Derecha', 'assets/Personajes/P1/Derechareal.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p1Izquierda', 'assets/Personajes/P1/IzquierdaReal.png',{frameWidth: 33, frameHeight: 48});
+      this.load.image('tile', 'assets/Fondo_Bloques/tile_aqua.png');
+      this.load.image('fondo', 'assets/Fondo_Bloques/fondoreal.png');
+      this.load.image('block', 'assets/Fondo_Bloques/bloque.png');
+      this.load.spritesheet('Bomba', 'assets/Bomba/Bomb.png',{frameWidth: 50, frameHeight: 50});
+      this.load.spritesheet('Explode', 'assets/Bomba/Explosion.png',{frameWidth: 50, frameHeight: 50});
+        
+      this.load.spritesheet('p2Arriba', 'assets/Personajes/P2/p2arrb.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p2Abajo', 'assets/Personajes/P2/p2abj.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p2Derecha', 'assets/Personajes/P2/p2der.png',{frameWidth: 33, frameHeight: 48});
+      this.load.spritesheet('p2Izquierda', 'assets/Personajes/P2/p2izq.png',{frameWidth: 33, frameHeight: 48});
+    }
+    function create()
+    {
+
+      var m = 0;
+      while (m<12) {
+        var n=0;
+        while (n < 18) {
+            this.image = this.add.image(n*50,m*50,'tile').setOrigin(0,0);
+            n++;
+        }
+      m++;
+      }
+
+      walls = this.physics.add.staticGroup();
+      Bomba = this.physics.add.staticGroup();
+      walls.create(75,75,'block');
+      walls.create(125,75,'block');
+      walls.create(175,75,'block');
+      walls.create(175,125,'block');
+      walls.create(25,225,'block');
+      walls.create(75,225,'block');
+      walls.create(75,175,'block');
+      walls.create(125,225,'block');
+      walls.create(75,325,'block');
+      walls.create(125,325,'block');
+      walls.create(75,375,'block');
+      walls.create(75,425,'block');
+      walls.create(75,525,'block');
+      walls.create(125,525,'block');
+      walls.create(175,525,'block');
+      walls.create(175,475,'block');
+      walls.create(75,75,'block');
+      walls.create(275,525,'block');
+      walls.create(225,325,'block');
+      walls.create(275,325,'block');
+      walls.create(275,375,'block');
+      walls.create(275,425,'block');
+      walls.create(325,525,'block');
+      walls.create(425,425,'block');
+      walls.create(425,475,'block');
+      walls.create(375,425,'block');
+      walls.create(375,325,'block');
+      walls.create(425,325,'block');
+      walls.create(275,75,'block');
+      walls.create(275,125,'block');
+      walls.create(275,175,'block');
+      walls.create(375,225,'block');
+      walls.create(425,225,'block');
+      walls.create(375,175,'block');
+      walls.create(425,175,'block');
+      walls.create(375,25,'block');
+      walls.create(375,75,'block');
+      walls.create(425,25,'block');
+      walls.create(525,575,'block');
+      walls.create(575,575,'block');
+      walls.create(475,575,'block');
+      walls.create(525,475,'block');
+      walls.create(575,475,'block');
+      walls.create(575,425,'block');
+      walls.create(575,375,'block');
+      walls.create(525,375,'block');
+      walls.create(575,275,'block');
+      walls.create(575,225,'block');
+      walls.create(525,225,'block');
+      walls.create(525,175,'block');
+      walls.create(525,25,'block');
+      walls.create(525,75,'block');
+      walls.create(575,75,'block');
+      walls.create(625,75,'block');
+      walls.create(675,25,'block');
+      walls.create(725,125,'block');
+      walls.create(775,125,'block');
+      walls.create(675,225,'block');
+      walls.create(675,275,'block');
+      walls.create(725,275,'block');
+      walls.create(775,275,'block');
+      walls.create(775,225,'block');
+      walls.create(675,375,'block');
+      walls.create(675,425,'block');
+      walls.create(775,425,'block');
+      walls.create(725,425,'block');
+      walls.create(675,525,'block');
+      walls.create(675,575,'block');
+      walls.create(125,575,'block');
+      walls.create(125,25,'block');
+      walls.create(775,575,'block');
+      walls.create(775,525,'block');
+      walls.create(825,575,'block');
+      walls.create(725,575,'block');
+      walls.create(875,425,'block');
+      walls.create(875,375,'block');
+      walls.create(825,125,'block');
+      walls.create(725,25,'block');
+      p1 = this.physics.add.sprite(0,50,'p1Abajo');
+      p1.setCollideWorldBounds(true);
+        p1.setScale(0.9);
+      this.physics.add.collider(p1, walls);
+        this.anims.create({
+          key: 'down',
+          frames: this.anims.generateFrameNumbers('p1Abajo', {start:0, end: 3}),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'right',
+          frames: this.anims.generateFrameNumbers('p1Izquierda', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'left',
+          frames: this.anims.generateFrameNumbers('p1Derecha', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'up',
+          frames: this.anims.generateFrameNumbers('p1Arriba', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+        key: 'turn',
+        frames: [ { key: 'p1p1Abajo', frame: 0 } ],
+        frameRate: 20
+        });
+        cursors = this.input.keyboard.createCursorKeys();
+
+
+        this.anims.create({
+          key: 'space',
+          frames: this.anims.generateFrameNumbers('Bomba', {start: 0, end: 2}),
+          frameRate: 5,
+          repeat: -1
+        });
+
+        this.anims.create({
+          key: 'explosion',
+          frames: this.anims.generateFrameNumbers('Explode', {start: 0, end: 4}),
+          framerate: 20,
+          repeat: -1
+        });
+        
+        
+          p2 = this.physics.add.sprite(900,50,'p2Abajo');
+      p2.setCollideWorldBounds(true);
+        p2.setScale(0.9);
+      this.physics.add.collider(p2, walls);
+        this.anims.create({
+          key: 'S',
+          frames: this.anims.generateFrameNumbers('p2Abajo', {start:0, end: 3}),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'D',
+          frames: this.anims.generateFrameNumbers('p2Izquierda', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'A',
+          frames: this.anims.generateFrameNumbers('p2Derecha', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+          key: 'W',
+          frames: this.anims.generateFrameNumbers('p2Arriba', { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: 0
+        });
+
+        this.anims.create({
+        key: 'turn',
+        frames: [ { key: 'p1p1Abajo', frame: 0 } ],
+        frameRate: 20
+        });
+        cursors = this.input.keyboard.createCursorKeys();
+
+
+        this.anims.create({
+          key: 'E',
+          frames: this.anims.generateFrameNumbers('Bomba', {start: 0, end: 2}),
+          frameRate: 5,
+          repeat: -1
+        });
+    
+    this.DER2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.IZQ2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.UP2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.DOWN2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.BOMB2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        
+    }
+    function update(time, delta)
+    {
+        
+        if(this.BOMB2.isDown)
+      {
+        bomba = this.physics.add.sprite(p2.x, p2.y,'Bomba');
+        bomba.anims.play('E', true);
+        open=true;
+      }else if((this.BOMB2.isUp)&& (open == true))
+      {
+        timedEvent = this.time.addEvent({ delay: 2000, callback: onEvent, callbackScope: this});
+        open= false;
+      }else if (this.IZQ2.isDown)
+      {
+        p2.setVelocityX(-160);
+        p2.anims.play('A', true);
+
+      }
+        else if (this.DER2.isDown)
+            {
+              p2.setVelocityX(160);
+              p2.anims.play('D', true);
+
+            }else if(this.UP2.isDown)
+                  {
+                    p2.setVelocityY(-160);
+                    p2.anims.play('W', true);
+
+                  }else if(this.DOWN2.isDown)
+                        {
+                          p2.setVelocityY(160);
+                          p2.anims.play('S', true);
+
+                        } else{
+                          p2.setVelocityX(0);
+                          p2.setVelocityY(0);
+                        }
+        
+      if(cursors.space.isDown)
+      {
+        bomba = this.physics.add.sprite(p1.x, p1.y,'Bomba');
+        bomba.anims.play('space', true);
+        open=true;
+      }else if((cursors.space.isUp)&& (open == true))
+      {
+        timedEvent = this.time.addEvent({ delay: 2000, callback: onEvent, callbackScope: this});
+        open= false;
+      }else if (cursors.left.isDown)
+      {
+        p1.setVelocityX(-160);
+        p1.anims.play('left', true);
+
+      }
+        else if (cursors.right.isDown)
+            {
+              p1.setVelocityX(160);
+              p1.anims.play('right', true);
+
+            }else if(cursors.up.isDown)
+                  {
+                    p1.setVelocityY(-160);
+                    p1.anims.play('up', true);
+
+                  }else if(cursors.down.isDown)
+                        {
+                          p1.setVelocityY(160);
+                          p1.anims.play('down', true);
+
+                        } else{
+                          p1.setVelocityX(0);
+                          p1.setVelocityY(0);
+                        }
+       
+    }
+        
+    function onEvent()
+    {
+      n=0;
+      var iny=bomba.y;
+      var inx= bomba.x;
+      bomba.destroy();
+      var explosion1 = this.physics.add.sprite(inx, iny-100,'Explode')
+      explosion1.anims.play('explosion', true);
+      var explosion2 = this.physics.add.sprite(inx, iny-50,'Explode')
+      explosion2.anims.play('explosion', true);
+      var explosion3 = this.physics.add.sprite(inx, iny,'Explode')
+      explosion3.anims.play('explosion', true);
+      var explosion4 = this.physics.add.sprite(inx, iny+50,'Explode')
+      explosion4.anims.play('explosion', true);
+      var explosion5 = this.physics.add.sprite(inx, iny+100,'Explode')
+            explosion5.anims.play('explosion', true);
+            var explosion6 = this.physics.add.sprite(inx-50, iny,'Explode')
+            explosion6.anims.play('explosion', true);
+            var explosion7 = this.physics.add.sprite(inx-100, iny,'Explode')
+            explosion7.anims.play('explosion', true);
+            var explosion8 = this.physics.add.sprite(inx+100, iny,'Explode')
+            explosion8.anims.play('explosion', true);
+            var explosion9 = this.physics.add.sprite(inx+50, iny,'Explode')
+            explosion9.anims.play('explosion', true);
+            }
+
+    </script>
+</body>
+</html>
